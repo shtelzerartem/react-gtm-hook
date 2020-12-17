@@ -77,4 +77,4 @@ function DispatchGTMEvent() {
   return context
 }
 
-export { GTMProvider, DispatchGTMEvent as dispatchGTMEvent }
+export { GTMProvider, DispatchGTMEvent }
