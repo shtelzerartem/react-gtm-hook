@@ -94,15 +94,12 @@ export default function useGTM(): IUseGTM {
     }
   }, [scriptLoaded, cachedState, gtmContextState])
 
-  const sendDataToGTM = useCallback(
-    (data: Object): void => {
-      if (scriptLoaded) sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
-      else {
-        setCachedState([...cachedState, data])
-      }
-    },
-    [gtmContextState, cachedState, scriptLoaded]
-  )
+  const sendDataToGTM = (data: Object): void => {
+    if (scriptLoaded) sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
+    else {
+      setCachedState([...cachedState, data])
+    }
+  }
 
   return {
     init,
