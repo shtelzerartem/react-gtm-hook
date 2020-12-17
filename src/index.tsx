@@ -1,7 +1,7 @@
-import React, { Context, ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react'
-import { initGTM, sendToGTM } from './utils/GoogleTagManager'
+import React, { Context, ReactNode, createContext, useEffect, useContext, useReducer } from 'react'
 
 import { ISnippetsParams } from './models/GoogleTagManager'
+import { initGTM, sendToGTM } from './utils/GoogleTagManager'
 
 declare global {
   interface Window {
@@ -19,10 +19,8 @@ type GTMHookProviderProps = { state?: any; children: ReactNode }
  * The shape of the hook
  */
 export type IUseGTM = {
-  init({ dataLayer, dataLayerName, id }: ISnippetsParams): void
-  sendDataToGTM(data: Object): void
   UseGTMHookProvider: ({ children }: GTMHookProviderProps) => JSX.Element
-  useGTMHookContext: Context<ISnippetsParams | undefined>
+  GTMContext: Context<ISnippetsParams | undefined>
 }
 
 /**
@@ -38,73 +36,45 @@ export const initialState: ISnippetsParams = {
 /**
  * The context
  */
-const useGTMHookContext = createContext<ISnippetsParams | undefined>(initialState)
+export const GTMContext = createContext<ISnippetsParams | undefined>(initialState)
+export const GTMContextDispatch = createContext<any | undefined>(undefined)
 
-/**
- * A provider for testing purpose only
- */
-export const TestingProvider = ({ state, children }: GTMHookProviderProps) => (
-  <useGTMHookContext.Provider value={state}>{children}</useGTMHookContext.Provider>
-)
-
-/**
- * The Google Tag Manager Hook
- */
-export default function useGTM(): IUseGTM {
-  const [dataLayerState, setDataLayerState] = useState(initialState)
-  const [cachedState, setCachedState] = useState<any[] | never>([])
-  const [scriptLoaded, setScriptLoaded] = useState(false)
-  const gtmContextState = useContext(useGTMHookContext)
-
-  const init = useCallback(
-    (snippetParams: ISnippetsParams): void =>
-      setDataLayerState(state => ({
-        ...state,
-        ...snippetParams
-      })),
-    [setDataLayerState]
-  )
-
-  useEffect(() => {
-    if (dataLayerState.id !== '') {
-      const dataLayerScript = initGTM({
-        dataLayer: dataLayerState.dataLayer,
-        dataLayerName: dataLayerState.dataLayerName,
-        environment: dataLayerState.environment,
-        id: dataLayerState.id
-      })
-
-      dataLayerScript.onload = () => {
-        console.log('DatalayerScript Loaded')
-        setScriptLoaded(true)
-      }
-    }
-  }, [dataLayerState])
-
-  const UseGTMHookProvider = ({ children }: GTMHookProviderProps) => (
-    <useGTMHookContext.Provider value={dataLayerState}>{children}</useGTMHookContext.Provider>
-  )
-
-  useEffect(() => {
-    if (scriptLoaded) {
-      console.log('Script Loaded')
-      for (const data of cachedState) {
-        sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
-      }
-    }
-  }, [scriptLoaded, cachedState, gtmContextState])
-
-  const sendDataToGTM = (data: Object): void => {
-    if (scriptLoaded) sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
-    else {
-      setCachedState([...cachedState, data])
-    }
-  }
-
-  return {
-    init,
-    sendDataToGTM,
-    UseGTMHookProvider,
-    useGTMHookContext
-  }
+function dataReducer(state: ISnippetsParams, data: any) {
+  sendToGTM({ data, dataLayerName: state?.dataLayerName! })
+  return state
 }
+
+/**
+ * The Google Tag Manager Provider
+ */
+function GTMProvider({ state, children }: GTMHookProviderProps): JSX.Element {
+  const [store, dispatch] = useReducer(dataReducer, { ...initialState, ...state })
+
+  useEffect(() => {
+    if (state.id !== '') {
+      initGTM({
+        dataLayer: state.dataLayer,
+        dataLayerName: state.dataLayerName,
+        environment: state.environment,
+        id: state.id
+      })
+    }
+  }, [state])
+
+  return (
+    <GTMContext.Provider value={store}>
+      <GTMContextDispatch.Provider value={dispatch}>{children}</GTMContextDispatch.Provider>
+    </GTMContext.Provider>
+  )
+}
+
+function DispatchGTMEvent() {
+  const context = useContext(GTMContext)
+  if (context === undefined) {
+    throw new Error('useCountDispatch must be used within a CountProvider')
+  }
+
+  return context
+}
+
+export { GTMProvider, DispatchGTMEvent as dispatchGTMEvent }
