@@ -49,7 +49,7 @@ export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippets
   })
 
   gtm.setDataLayer()
-  
+
   const script = gtm.getScript()
   const noScript = gtm.getNoScript()
 

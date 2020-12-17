@@ -57,7 +57,7 @@ function GTMProvider({ state, children }: GTMHookProviderProps): JSX.Element {
       environment: state.environment,
       id: state.id
     })
-  }, [])
+  })
 
   return (
     <GTMContext.Provider value={store}>
