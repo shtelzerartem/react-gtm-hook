@@ -43,7 +43,7 @@ const setupGTM = (params: ISnippetsParams): ISetupGTM => {
 export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippetsParams): void => {
   const gtm = setupGTM({
     dataLayer,
-    dataLayerName,
+    dataLayerName: dataLayerName || 'dataLayer',
     environment,
     id
   })
