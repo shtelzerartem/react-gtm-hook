@@ -47,13 +47,11 @@
     "tslib": "^2.0.3",
     "typescript": "^4.0.3"
   },
+  "rules": {
+    "react-hooks/rules-of-hooks": "warn"
+  },
   "peerDependencies": {
     "react": ">=16"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsdx lint src test"
-    }
   },
   "prettier": {
     "printWidth": 120,
