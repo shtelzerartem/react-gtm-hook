@@ -73,7 +73,9 @@ export default function useGTM(): IUseGTM {
         environment: dataLayerState.environment,
         id: dataLayerState.id
       })
+
       dataLayerScript.onload = () => {
+        console.log('DatalayerScript Loaded')
         setScriptLoaded(true)
       }
     }
@@ -84,28 +86,13 @@ export default function useGTM(): IUseGTM {
   )
 
   useEffect(() => {
-    if (dataLayerState.id !== '') {
-      const dataLayerScript = initGTM({
-        dataLayer: dataLayerState.dataLayer,
-        dataLayerName: dataLayerState.dataLayerName,
-        environment: dataLayerState.environment,
-        id: dataLayerState.id
-      })
-      dataLayerScript.onload = () => {
-        setScriptLoaded(true)
+    if (scriptLoaded) {
+      console.log('Script Loaded')
+      for (const data of cachedState) {
+        sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
       }
     }
-  }, [dataLayerState])
-
-  const restoreCache = useCallback((): void => {
-    for (const data of cachedState) {
-      sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
-    }
-  }, [gtmContextState, cachedState])
-
-  useEffect(() => {
-    if (scriptLoaded) restoreCache()
-  }, [scriptLoaded, restoreCache])
+  }, [scriptLoaded, cachedState, gtmContextState])
 
   const sendDataToGTM = useCallback(
     (data: Object): void => {
