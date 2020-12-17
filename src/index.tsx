@@ -52,7 +52,7 @@ export const TestingProvider = ({ state, children }: GTMHookProviderProps) => (
  */
 export default function useGTM(): IUseGTM {
   const [dataLayerState, setDataLayerState] = useState(initialState)
-  const [cachedState, setCachedState] = useState([])
+  const [cachedState, setCachedState] = useState<any[] | never>([])
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const gtmContextState = useContext(useGTMHookContext)
 
@@ -110,7 +110,9 @@ export default function useGTM(): IUseGTM {
   const sendDataToGTM = useCallback(
     (data: Object): void => {
       if (scriptLoaded) sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
-      else setCachedState(cachedState.concat(data))
+      else {
+        setCachedState([...cachedState, data])
+      }
     },
     [gtmContextState, cachedState, scriptLoaded]
   )
