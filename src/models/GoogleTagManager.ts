@@ -44,7 +44,7 @@ export type ISnippetsParams = {
  * The shape of the setupGTM function
  */
 export type ISetupGTM = {
-  getDataLayerScript(): HTMLElement
+  setDataLayer(): void
   getNoScript(): HTMLElement
   getScript(): HTMLElement
 }

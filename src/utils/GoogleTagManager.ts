@@ -1,4 +1,4 @@
-import { getDataLayerSnippet, getGTMScript, getIframeSnippet } from './snippets'
+import { getGTMScript, getIframeSnippet } from './snippets'
 import { ISendToGTM, ISetupGTM, ISnippetsParams } from '../models/GoogleTagManager'
 
 /**
@@ -6,10 +6,12 @@ import { ISendToGTM, ISetupGTM, ISnippetsParams } from '../models/GoogleTagManag
  * @param params - The snippets params
  */
 const setupGTM = (params: ISnippetsParams): ISetupGTM => {
-  const getDataLayerScript = (): HTMLElement => {
-    const dataLayerScript = document.createElement('script')
-    dataLayerScript.innerHTML = getDataLayerSnippet(params.dataLayer, params.dataLayerName)
-    return dataLayerScript
+  const setDataLayer = (): void => {
+    const dataLayer = params.dataLayer
+    const dataLayerName = params.dataLayerName || 'dataLayer'
+
+    window[dataLayerName] = window[dataLayerName] || []
+    window[dataLayerName].push(JSON.stringify(dataLayer))
   }
 
   const getNoScript = (): HTMLElement => {
@@ -25,7 +27,7 @@ const setupGTM = (params: ISnippetsParams): ISetupGTM => {
   }
 
   return {
-    getDataLayerScript,
+    setDataLayer,
     getNoScript,
     getScript
   }
@@ -38,7 +40,7 @@ const setupGTM = (params: ISnippetsParams): ISetupGTM => {
  * @param environment - Specify the custom environment to use
  * @param id - The ID of the GTM
  */
-export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippetsParams): HTMLElement => {
+export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippetsParams): void => {
   const gtm = setupGTM({
     dataLayer,
     dataLayerName,
@@ -46,15 +48,13 @@ export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippets
     id
   })
 
-  const dataLayerScript = gtm.getDataLayerScript()
+  gtm.setDataLayer()
+  
   const script = gtm.getScript()
   const noScript = gtm.getNoScript()
 
   document.head.insertBefore(script, document.head.childNodes[0])
-  document.head.insertBefore(dataLayerScript, document.head.childNodes[0])
   document.body.insertBefore(noScript, document.body.childNodes[0])
-
-  return dataLayerScript
 }
 
 /**

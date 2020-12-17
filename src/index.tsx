@@ -51,15 +51,13 @@ function GTMProvider({ state, children }: GTMHookProviderProps): JSX.Element {
   const [store, dispatch] = useReducer(dataReducer, { ...initialState, ...state })
 
   useEffect(() => {
-    if (state.id !== '') {
-      initGTM({
-        dataLayer: state.dataLayer,
-        dataLayerName: state.dataLayerName,
-        environment: state.environment,
-        id: state.id
-      })
-    }
-  }, [state])
+    initGTM({
+      dataLayer: state.dataLayer,
+      dataLayerName: state.dataLayerName,
+      environment: state.environment,
+      id: state.id
+    })
+  }, [])
 
   return (
     <GTMContext.Provider value={store}>
