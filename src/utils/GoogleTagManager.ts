@@ -11,7 +11,7 @@ const setupGTM = (params: ISnippetsParams): ISetupGTM => {
     const dataLayerName = params.dataLayerName || 'dataLayer'
 
     window[dataLayerName] = window[dataLayerName] || []
-    window[dataLayerName].push(JSON.stringify(dataLayer))
+    window[dataLayerName].push(dataLayer)
   }
 
   const getNoScript = (): HTMLElement => {
