@@ -75,4 +75,4 @@ function useGTMDispatch() {
   return context
 }
 
-export { GTMProvider, useGTMDispatch }
+export { GTMProvider, useGTMDispatch, sendToGTM }
