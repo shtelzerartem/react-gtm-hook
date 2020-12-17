@@ -62,4 +62,4 @@ export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippets
  * @param dataLayerName - The dataLayer name
  * @param data - The data to push
  */
-export const sendToGTM = ({ dataLayerName, data }: ISendToGTM): void => window[dataLayerName].push(data)
+export const sendToGTM = ({ dataLayerName, data }: ISendToGTM): void => window[dataLayerName || 'dataLayer'].push(data)
