@@ -52,6 +52,8 @@ export const TestingProvider = ({ state, children }: GTMHookProviderProps) => (
  */
 export default function useGTM(): IUseGTM {
   const [dataLayerState, setDataLayerState] = useState(initialState)
+  const [cachedState, setCachedState] = useState([])
+  const [scriptLoaded, setScriptLoaded] = useState(false)
   const gtmContextState = useContext(useGTMHookContext)
 
   const init = useCallback(
@@ -65,12 +67,15 @@ export default function useGTM(): IUseGTM {
 
   useEffect(() => {
     if (dataLayerState.id !== '') {
-      initGTM({
+      const dataLayerScript = initGTM({
         dataLayer: dataLayerState.dataLayer,
         dataLayerName: dataLayerState.dataLayerName,
         environment: dataLayerState.environment,
         id: dataLayerState.id
       })
+      dataLayerScript.onload = () => {
+        setScriptLoaded(true)
+      }
     }
   }, [dataLayerState])
 
@@ -78,12 +83,36 @@ export default function useGTM(): IUseGTM {
     <useGTMHookContext.Provider value={dataLayerState}>{children}</useGTMHookContext.Provider>
   )
 
+  useEffect(() => {
+    if (dataLayerState.id !== '') {
+      const dataLayerScript = initGTM({
+        dataLayer: dataLayerState.dataLayer,
+        dataLayerName: dataLayerState.dataLayerName,
+        environment: dataLayerState.environment,
+        id: dataLayerState.id
+      })
+      dataLayerScript.onload = () => {
+        setScriptLoaded(true)
+      }
+    }
+  }, [dataLayerState])
+
+  const restoreCache = useCallback((): void => {
+    for (const data of cachedState) {
+      sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
+    }
+  }, [gtmContextState, cachedState])
+
+  useEffect(() => {
+    if (scriptLoaded) restoreCache()
+  }, [scriptLoaded, restoreCache])
+
   const sendDataToGTM = useCallback(
     (data: Object): void => {
-      console.log(data, gtmContextState?.dataLayerName!, gtmContextState)
-      sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
+      if (scriptLoaded) sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
+      else setCachedState(cachedState.concat(data))
     },
-    [gtmContextState]
+    [gtmContextState, cachedState, scriptLoaded]
   )
 
   return {

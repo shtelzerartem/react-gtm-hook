@@ -38,7 +38,7 @@ const setupGTM = (params: ISnippetsParams): ISetupGTM => {
  * @param environment - Specify the custom environment to use
  * @param id - The ID of the GTM
  */
-export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippetsParams): void => {
+export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippetsParams): HTMLElement => {
   const gtm = setupGTM({
     dataLayer,
     dataLayerName,
@@ -53,6 +53,8 @@ export const initGTM = ({ dataLayer, dataLayerName, environment, id }: ISnippets
   document.head.insertBefore(script, document.head.childNodes[0])
   document.head.insertBefore(dataLayerScript, document.head.childNodes[0])
   document.body.insertBefore(noScript, document.body.childNodes[0])
+
+  return dataLayerScript
 }
 
 /**
