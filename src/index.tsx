@@ -51,7 +51,7 @@ export const TestingProvider = ({ state, children }: GTMHookProviderProps) => (
  * The Google Tag Manager Hook
  */
 export default function useGTM(): IUseGTM {
-  const [dataLayerState, setDataLayerState] = useState<ISnippetsParams>(initialState)
+  const [dataLayerState, setDataLayerState] = useState(initialState)
   const gtmContextState = useContext(useGTMHookContext)
 
   const init = useCallback(
@@ -61,13 +61,6 @@ export default function useGTM(): IUseGTM {
         ...snippetParams
       })),
     [setDataLayerState]
-  )
-
-  const sendDataToGTM = useCallback(
-    (data: Object): void => {
-      sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
-    },
-    [gtmContextState]
   )
 
   useEffect(() => {
@@ -83,6 +76,14 @@ export default function useGTM(): IUseGTM {
 
   const UseGTMHookProvider = ({ children }: GTMHookProviderProps) => (
     <useGTMHookContext.Provider value={dataLayerState}>{children}</useGTMHookContext.Provider>
+  )
+
+  const sendDataToGTM = useCallback(
+    (data: Object): void => {
+      console.log(data, gtmContextState?.dataLayerName!, gtmContextState)
+      sendToGTM({ data, dataLayerName: gtmContextState?.dataLayerName! })
+    },
+    [gtmContextState]
   )
 
   return {
