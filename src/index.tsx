@@ -57,7 +57,7 @@ function GTMProvider({ state, children }: GTMHookProviderProps): JSX.Element {
       environment: state.environment,
       id: state.id
     })
-  })
+  }, [state])
 
   return (
     <GTMContext.Provider value={store}>
@@ -69,7 +69,7 @@ function GTMProvider({ state, children }: GTMHookProviderProps): JSX.Element {
 function useGTMDispatch() {
   const context = useContext(GTMContextDispatch)
   if (context === undefined) {
-    throw new Error('useCountDispatch must be used within a CountProvider')
+    throw new Error('useGTMDispatch must be used within a GTMProvider')
   }
 
   return context
