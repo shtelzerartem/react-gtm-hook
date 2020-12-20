@@ -66,13 +66,13 @@ function GTMProvider({ state, children }: GTMHookProviderProps): JSX.Element {
   )
 }
 
-function useGTMDispatch() {
+function dispatchGTMEvent() {
   const context = useContext(GTMContextDispatch)
   if (context === undefined) {
-    throw new Error('useGTMDispatch must be used within a GTMProvider')
+    throw new Error('dispatchGTMEvent must be used within a GTMProvider')
   }
 
   return context
 }
 
-export { GTMProvider, useGTMDispatch, sendToGTM }
+export { GTMProvider, dispatchGTMEvent, sendToGTM }
