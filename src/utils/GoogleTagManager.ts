@@ -10,7 +10,7 @@ const setupGTM = (params: ISnippetsParams): ISetupGTM => {
     const dataLayer = params.dataLayer
     const dataLayerName = params.dataLayerName || 'dataLayer'
 
-    window[dataLayerName] = []
+    window[dataLayerName] = window[dataLayerName] || []
     window[dataLayerName].push(dataLayer)
   }
 
