@@ -8,7 +8,7 @@
     "react"
   ],
   "description": "Easily manage the Google Tag Manager via Hook",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "main": "dist/index.js",
   "module": "dist/react-gtm-hook.esm.js",
   "typings": "dist/index.d.ts",
@@ -24,8 +24,7 @@
     "test": "tsdx test --env=jsdom",
     "test:watch": "tsdx test --env=jsdom --watch",
     "lint": "tsdx lint src test",
-    "prepare": "tsdx build",
-    "publish": "npm run build && npm publish"
+    "prepare": "tsdx build"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
